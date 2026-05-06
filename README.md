@@ -2,7 +2,7 @@
 
 Pure Rust implementation of [Qwen3-ASR](https://github.com/QwenLM/Qwen3-ASR) automatic speech recognition. The project builds a cross-platform CLI tool and API server suitable for agentic skills for AI agents and bots.
 
-- **asr** generates text from an input audio file (supports most codex and file formats)
+- **asr** generates text from an input audio file or launches the GPUI voice input GUI (`asr gui`)
 - **asr-server** runs an OpenAI-compatible HTTP API server for audio transcription
 
 Supports two backends: **libtorch** (via the `tch` crate, cross-platform with optional CUDA) and **MLX** (Apple Silicon native via Metal GPU). Loads model weights directly from safetensors files and re-implements the complete neural network forward pass in Rust.
@@ -36,14 +36,14 @@ Once complete, run your first transcription:
 
 ```bash
 cd qwen3_asr_rs
-./asr ./Qwen3-ASR-0.6B sample.wav
+./asr transcribe ./Qwen3-ASR-0.6B sample.wav
 ```
 
 **Windows:**
 
 ```powershell
 cd qwen3_asr_rs
-.\asr .\Qwen3-ASR-0.6B sample.wav
+.\asr transcribe .\Qwen3-ASR-0.6B sample.wav
 ```
 
 Output:
@@ -61,6 +61,56 @@ The implementation ports the Qwen3-ASR encoder-decoder architecture from PyTorch
 - **Text Decoder** (Qwen3): 28 transformer decoder layers with Grouped Query Attention (16 Q heads / 8 KV heads), QK-normalization, MRoPE (Multimodal Rotary Position Embeddings), and SwiGLU MLP
 - **Audio preprocessing**: FFmpeg decodes any audio format → resampled to mono 16kHz f32 → 128-bin log-mel spectrogram (Whisper-style)
 
+## GUI Voice Input
+
+The `gui` binary provides a desktop voice-to-text input tool powered by [GPUI](https://github.com/zed-industries/zed) (the same framework behind the Zed editor). Speak into your microphone and the transcribed text is pasted directly into any application.
+
+### Features
+
+- **Microphone recording**: toggle or hold-to-talk modes
+- **Direct input**: types transcribed text directly into the active window (uses `xdotool` on Linux, `enigo` on Windows/macOS)
+- **Clipboard output**: copies transcribed text to the system clipboard
+- **Keyboard shortcuts**:
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+T` | Toggle recording on/off |
+| `Ctrl+H` | Hold-to-talk (hold `h`, release to stop) |
+| `Ctrl+C` | Copy transcribed text to clipboard |
+| `Ctrl+Shift+C` | Clear transcribed text |
+| `Ctrl+O` | Switch output method (clipboard / direct input) |
+
+### Running
+
+The GUI auto-discovers the model directory (checks HuggingFace cache and local directories):
+
+```bash
+asr gui
+```
+
+Launch from the release package after running the install script, or from source:
+
+```bash
+# From release package (after install.sh / install.ps1)
+cd qwen3_asr_rs
+./asr gui              # macOS / Linux
+.\asr gui              # Windows
+
+# From source
+cargo build --release
+./target/release/asr gui
+```
+
+**System requirements:** On Linux, the GPUI framework requires development libraries for Wayland/X11 and Vulkan:
+
+```bash
+sudo apt-get install libxkbcommon-dev libxcb-render0-dev libxcb-shape0-dev \
+  libxcb-xfixes0-dev libxcb1-dev libxkbcommon-x11-dev libwayland-dev \
+  libvulkan-dev libasound2-dev
+```
+
+By default, transcription uses the `ja` language hint. To change the language, edit `src/gui.rs` and rebuild.
+
 ## Supported Models
 
 | Model | Parameters | HuggingFace |
@@ -72,14 +122,14 @@ The implementation ports the Qwen3-ASR encoder-decoder architecture from PyTorch
 
 ```bash
 # Basic transcription (auto-detect language)
-asr ./Qwen3-ASR-0.6B input.wav
+asr transcribe ./Qwen3-ASR-0.6B input.wav
 
 # Force language
-asr ./Qwen3-ASR-0.6B input.wav chinese
-asr ./Qwen3-ASR-0.6B input.wav english
+asr transcribe ./Qwen3-ASR-0.6B input.wav chinese
+asr transcribe ./Qwen3-ASR-0.6B input.wav english
 
 # Enable debug logging
-RUST_LOG=debug asr ./Qwen3-ASR-0.6B input.wav
+RUST_LOG=debug asr transcribe ./Qwen3-ASR-0.6B input.wav
 ```
 
 ### Output Format
@@ -255,6 +305,10 @@ src/
 ├── text_decoder.rs    # Qwen3 text decoder with KV cache
 ├── tokenizer.rs       # HuggingFace tokenizer wrapper
 ├── inference.rs       # End-to-end ASR inference pipeline
+├── capture.rs         # cpal-based microphone audio capture
+├── bin/
+│   ├── server.rs      # API server binary entry point
+│   └── gui.rs         # GPUI voice input GUI
 └── backend/
     └── mlx/           # Apple MLX backend (Metal GPU)
         ├── ffi.rs     # Raw C FFI bindings to mlx-c
