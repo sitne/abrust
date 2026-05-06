@@ -93,6 +93,7 @@ jobs:
         run: |
           echo "LIBTORCH=${{ github.workspace }}\libtorch" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "LIBTORCH_BYPASS_VERSION_CHECK=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "RUSTFLAGS=-Ctarget-feature=+crt-static" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Build (tch)
         if: matrix.backend == 'tch'
