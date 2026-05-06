@@ -57,7 +57,7 @@ jobs:
         run: curl -Lo ${{ matrix.libtorch-archive }} "${{ matrix.libtorch-url }}"
 
       - name: Extract libtorch
-        if: matrix.backend == 'tch'
+        if: matrix.backend == 'tch' && runner.os != 'Windows'
         run: tar xzf ${{ matrix.libtorch-archive }}
 
       - name: Extract libtorch (Windows)
@@ -133,27 +133,27 @@ jobs:
           "
 
       - name: "[0.6B] Transcribe sample1 (English)"
-        run: ./target/release/asr Qwen3-ASR-0.6B test_audio/sample1.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-0.6B test_audio/sample1.wav
         if: runner.os != 'Windows'
 
       - name: "[0.6B] Transcribe sample1 (English) Windows"
-        run: .\target\release\asr Qwen3-ASR-0.6B test_audio\sample1.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-0.6B test_audio\sample1.wav
         if: runner.os == 'Windows'
 
       - name: "[0.6B] Transcribe sample2 (English)"
-        run: ./target/release/asr Qwen3-ASR-0.6B test_audio/sample2.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-0.6B test_audio/sample2.wav
         if: runner.os != 'Windows'
 
       - name: "[0.6B] Transcribe sample2 (English) Windows"
-        run: .\target\release\asr Qwen3-ASR-0.6B test_audio\sample2.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-0.6B test_audio\sample2.wav
         if: runner.os == 'Windows'
 
       - name: "[0.6B] Transcribe sample3 (Chinese)"
-        run: ./target/release/asr Qwen3-ASR-0.6B test_audio/sample3.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-0.6B test_audio/sample3.wav
         if: runner.os != 'Windows'
 
       - name: "[0.6B] Transcribe sample3 (Chinese) Windows"
-        run: .\target\release\asr Qwen3-ASR-0.6B test_audio\sample3.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-0.6B test_audio\sample3.wav
         if: runner.os == 'Windows'
 
       - name: "[0.6B] API server test"
@@ -220,27 +220,27 @@ jobs:
           "
 
       - name: "[1.7B] Transcribe sample1 (English)"
-        run: ./target/release/asr Qwen3-ASR-1.7B test_audio/sample1.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-1.7B test_audio/sample1.wav
         if: runner.os != 'Windows'
 
       - name: "[1.7B] Transcribe sample1 (English) Windows"
-        run: .\target\release\asr Qwen3-ASR-1.7B test_audio\sample1.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-1.7B test_audio\sample1.wav
         if: runner.os == 'Windows'
 
       - name: "[1.7B] Transcribe sample2 (English)"
-        run: ./target/release/asr Qwen3-ASR-1.7B test_audio/sample2.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-1.7B test_audio/sample2.wav
         if: runner.os != 'Windows'
 
       - name: "[1.7B] Transcribe sample2 (English) Windows"
-        run: .\target\release\asr Qwen3-ASR-1.7B test_audio\sample2.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-1.7B test_audio\sample2.wav
         if: runner.os == 'Windows'
 
       - name: "[1.7B] Transcribe sample3 (Chinese)"
-        run: ./target/release/asr Qwen3-ASR-1.7B test_audio/sample3.wav
+        run: ./target/release/asr transcribe Qwen3-ASR-1.7B test_audio/sample3.wav
         if: runner.os != 'Windows'
 
       - name: "[1.7B] Transcribe sample3 (Chinese) Windows"
-        run: .\target\release\asr Qwen3-ASR-1.7B test_audio\sample3.wav
+        run: .\target\release\asr transcribe Qwen3-ASR-1.7B test_audio\sample3.wav
         if: runner.os == 'Windows'
 
       - name: Upload binaries
@@ -248,5 +248,5 @@ jobs:
         with:
           name: qwen3-asr-${{ matrix.name }}
           path: |
-            target/release/asr
-            target/release/asr-server
+            target/release/asr*
+            target/release/asr-server*

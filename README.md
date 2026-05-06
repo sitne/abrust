@@ -37,14 +37,14 @@ Once complete, run your first transcription:
 
 ```bash
 cd qwen3_asr_rs
-./asr ./Qwen3-ASR-0.6B sample.wav
+./asr transcribe ./Qwen3-ASR-0.6B sample.wav
 ```
 
 **Windows:**
 
 ```powershell
 cd qwen3_asr_rs
-.\asr .\Qwen3-ASR-0.6B sample.wav
+.\asr transcribe .\Qwen3-ASR-0.6B sample.wav
 ```
 
 Output:
@@ -102,14 +102,14 @@ By default, transcription uses the `ja` language hint. To change the language, e
 
 ```bash
 # Basic transcription (auto-detect language)
-asr ./Qwen3-ASR-0.6B input.wav
+asr transcribe ./Qwen3-ASR-0.6B input.wav
 
 # Force language
-asr ./Qwen3-ASR-0.6B input.wav chinese
-asr ./Qwen3-ASR-0.6B input.wav english
+asr transcribe ./Qwen3-ASR-0.6B input.wav chinese
+asr transcribe ./Qwen3-ASR-0.6B input.wav english
 
 # Enable debug logging
-RUST_LOG=debug asr ./Qwen3-ASR-0.6B input.wav
+RUST_LOG=debug asr transcribe ./Qwen3-ASR-0.6B input.wav
 ```
 
 ### Output Format
