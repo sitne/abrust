@@ -50,6 +50,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Clean build state
+        if: runner.os != 'Windows'
+        run: rm -f Cargo.lock && cargo clean
+
+      - name: Clean build state (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
         run: rm -f Cargo.lock && cargo clean
 
       - name: Download libtorch

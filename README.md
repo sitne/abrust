@@ -2,8 +2,7 @@
 
 Pure Rust implementation of [Qwen3-ASR](https://github.com/QwenLM/Qwen3-ASR) automatic speech recognition. The project builds a cross-platform CLI tool and API server suitable for agentic skills for AI agents and bots.
 
-- **asr** generates text from an input audio file (supports most codex and file formats)
-- **gui** records microphone input via GPUI and transcribes in real time (supports clipboard paste and direct keyboard input)
+- **asr** generates text from an input audio file or launches the GPUI voice input GUI (`asr gui`)
 - **asr-server** runs an OpenAI-compatible HTTP API server for audio transcription
 
 Supports two backends: **libtorch** (via the `tch` crate, cross-platform with optional CUDA) and **MLX** (Apple Silicon native via Metal GPU). Loads model weights directly from safetensors files and re-implements the complete neural network forward pass in Rust.
@@ -87,6 +86,27 @@ The GUI auto-discovers the model directory (checks HuggingFace cache and local d
 
 ```bash
 asr gui
+```
+
+Launch from the release package after running the install script, or from source:
+
+```bash
+# From release package (after install.sh / install.ps1)
+cd qwen3_asr_rs
+./asr gui              # macOS / Linux
+.\asr gui              # Windows
+
+# From source
+cargo build --release
+./target/release/asr gui
+```
+
+**System requirements:** On Linux, the GPUI framework requires development libraries for Wayland/X11 and Vulkan:
+
+```bash
+sudo apt-get install libxkbcommon-dev libxcb-render0-dev libxcb-shape0-dev \
+  libxcb-xfixes0-dev libxcb1-dev libxkbcommon-x11-dev libwayland-dev \
+  libvulkan-dev libasound2-dev
 ```
 
 By default, transcription uses the `ja` language hint. To change the language, edit `src/gui.rs` and rebuild.
